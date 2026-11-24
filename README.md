@@ -19,3 +19,9 @@ Berikut adalah hasil dokumentasi/screenshot dari praktikum Pertemuan 3:
 <img width="432" height="886" alt="image" src="https://github.com/user-attachments/assets/956cf7bf-6c58-458b-9df5-f66a8a5c759d" />
 <img width="432" height="886" alt="image" src="https://github.com/user-attachments/assets/338484e9-45db-4330-afde-f964aa22bed3" />
 <img width="432" height="886" alt="image" src="https://github.com/user-attachments/assets/d8ac9102-6bc8-45f6-9e2d-cce07ea5bbc7" />
+
+
+## Pertemuan 4
+Berikut adalah hasil dokumentasi/screenshot dari praktikum Pertemuan 4:
+
+<img width="432" height="886" alt="image" src="https://github.com/user-attachments/assets/ef800704-2dac-4ab3-a1c4-bc9c01d1f694" />
