@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:belajar_flutter/bloc/registrasi_bloc.dart';
+import 'package:belajar_flutter/widget/success_dialog.dart';
+import 'package:belajar_flutter/widget/warning_dialog.dart';
 
 class RegistrasiPage extends StatefulWidget {
   const RegistrasiPage({Key? key}) : super(key: key);
@@ -27,7 +30,7 @@ class _RegistrasiPageState extends State<RegistrasiPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Registrasi'),
+        title: const Text("Registrasi"),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -53,12 +56,12 @@ class _RegistrasiPageState extends State<RegistrasiPage> {
   // Membuat Textbox Nama
   Widget _namaTextField() {
     return TextFormField(
-      decoration: const InputDecoration(labelText: 'Nama'),
+      decoration: const InputDecoration(labelText: "Nama"),
       keyboardType: TextInputType.text,
       controller: _namaTextboxController,
       validator: (value) {
         if (value == null || value.length < 3) {
-          return 'Nama harus diisi minimal 3 karakter';
+          return "Nama harus diisi minimal 3 karakter";
         }
         return null;
       },
@@ -68,21 +71,18 @@ class _RegistrasiPageState extends State<RegistrasiPage> {
   // Membuat Textbox email
   Widget _emailTextField() {
     return TextFormField(
-      decoration: const InputDecoration(labelText: 'Email'),
+      decoration: const InputDecoration(labelText: "Email"),
       keyboardType: TextInputType.emailAddress,
       controller: _emailTextboxController,
       validator: (value) {
-        // Validasi harus diisi
         if (value == null || value.isEmpty) {
           return 'Email harus diisi';
         }
-
-        // Validasi email
-        const pattern =
+        const Pattern pattern =
             r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
-        final regex = RegExp(pattern);
+        final RegExp regex = RegExp(pattern.toString());
         if (!regex.hasMatch(value)) {
-          return 'Email tidak valid';
+          return "Email tidak valid";
         }
         return null;
       },
@@ -92,30 +92,28 @@ class _RegistrasiPageState extends State<RegistrasiPage> {
   // Membuat Textbox password
   Widget _passwordTextField() {
     return TextFormField(
-      decoration: const InputDecoration(labelText: 'Password'),
+      decoration: const InputDecoration(labelText: "Password"),
       keyboardType: TextInputType.text,
       obscureText: true,
       controller: _passwordTextboxController,
       validator: (value) {
-        // Jika karakter yang dimasukkan kurang dari 6 karakter
         if (value == null || value.length < 6) {
-          return 'Password harus diisi minimal 6 karakter';
+          return "Password harus diisi minimal 6 karakter";
         }
         return null;
       },
     );
   }
 
-  // Membuat Textbox Konfirmasi Password
+  // Membuat textbox Konfirmasi Password
   Widget _passwordKonfirmasiTextField() {
     return TextFormField(
-      decoration: const InputDecoration(labelText: 'Konfirmasi Password'),
+      decoration: const InputDecoration(labelText: "Konfirmasi Password"),
       keyboardType: TextInputType.text,
       obscureText: true,
       validator: (value) {
-        // Jika inputan tidak sama dengan password
         if (value != _passwordTextboxController.text) {
-          return 'Konfirmasi Password tidak sama';
+          return "Konfirmasi Password tidak sama";
         }
         return null;
       },
@@ -125,17 +123,54 @@ class _RegistrasiPageState extends State<RegistrasiPage> {
   // Membuat Tombol Registrasi
   Widget _buttonRegistrasi() {
     return ElevatedButton(
-      onPressed: _isLoading
-          ? null
-          : () {
+      child: const Text("Registrasi"),
+      onPressed: () {
         final validate = _formKey.currentState!.validate();
-        // Modul ini hanya mencontohkan validasi form.
-        // Pengiriman data ke REST API dibahas pada materi berikutnya.
-        if (validate) {
-          FocusScope.of(context).unfocus();
+        if (validate && !_isLoading) {
+          _submit();
         }
       },
-      child: const Text('Registrasi'),
     );
+  }
+
+  Future<void> _submit() async {
+    _formKey.currentState!.save();
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      await RegistrasiBloc.registrasi(
+        nama: _namaTextboxController.text,
+        email: _emailTextboxController.text,
+        password: _passwordTextboxController.text,
+      );
+      if (!mounted) return;
+      await showDialog<void>(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) => SuccessDialog(
+          description: "Registrasi berhasil, silahkan login",
+          okClick: () {
+            Navigator.pop(context);
+          },
+        ),
+      );
+    } catch (error) {
+      if (!mounted) return;
+      await showDialog<void>(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) => const WarningDialog(
+          description: "Registrasi gagal, silahkan coba lagi",
+        ),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
   }
 }

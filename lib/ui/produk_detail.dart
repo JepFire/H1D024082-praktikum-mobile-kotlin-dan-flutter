@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import '../model/produk.dart';
-import 'produk_form.dart';
+import 'package:belajar_flutter/model/produk.dart';
+import 'package:belajar_flutter/ui/produk_form.dart';
 
 class ProdukDetail extends StatefulWidget {
-  final Produk? produk;
+  Produk? produk;
 
-  const ProdukDetail({Key? key, this.produk}) : super(key: key);
+  ProdukDetail({Key? key, this.produk}) : super(key: key);
 
   @override
   _ProdukDetailState createState() => _ProdukDetailState();
@@ -14,26 +14,23 @@ class ProdukDetail extends StatefulWidget {
 class _ProdukDetailState extends State<ProdukDetail> {
   @override
   Widget build(BuildContext context) {
-    final produk = widget.produk!;
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Detail Produk'),
       ),
       body: Center(
         child: Column(
-          mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              'Kode : ${produk.kodeProduk}',
+              "Kode : ${widget.produk!.kodeProduk}",
               style: const TextStyle(fontSize: 20.0),
             ),
             Text(
-              'Nama : ${produk.namaProduk}',
+              "Nama : ${widget.produk!.namaProduk}",
               style: const TextStyle(fontSize: 18.0),
             ),
             Text(
-              'Harga : Rp. ${produk.hargaProduk}',
+              "Harga : Rp. ${widget.produk!.hargaProduk.toString()}",
               style: const TextStyle(fontSize: 18.0),
             ),
             _tombolHapusEdit(),
@@ -49,45 +46,49 @@ class _ProdukDetailState extends State<ProdukDetail> {
       children: [
         // Tombol Edit
         OutlinedButton(
-          child: const Text('EDIT'),
+          child: const Text("EDIT"),
           onPressed: () {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => ProdukForm(produk: widget.produk),
+                builder: (context) => ProdukForm(produk: widget.produk!),
               ),
             );
           },
         ),
         // Tombol Hapus
         OutlinedButton(
-          child: const Text('DELETE'),
-          onPressed: confirmHapus,
+          child: const Text("DELETE"),
+          onPressed: () => confirmHapus(),
         ),
       ],
     );
   }
 
   void confirmHapus() {
-    final alertDialog = AlertDialog(
-      content: const Text('Yakin ingin menghapus data ini?'),
+    final AlertDialog alertDialog = AlertDialog(
+      content: const Text("Yakin ingin menghapus data ini?"),
       actions: [
-        // Tombol hapus (aksi API belum dibahas pada modul ini)
+        // Tombol Ya. Kode sumber PDF mengarahkan tombol ini ke form produk.
         OutlinedButton(
-          child: const Text('Ya'),
-          onPressed: () {},
+          child: const Text("Ya"),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ProdukForm(produk: widget.produk!),
+              ),
+            );
+          },
         ),
         // Tombol batal
         OutlinedButton(
-          child: const Text('Batal'),
+          child: const Text("Batal"),
           onPressed: () => Navigator.pop(context),
         ),
       ],
     );
 
-    showDialog(
-      context: context,
-      builder: (context) => alertDialog,
-    );
+    showDialog(builder: (context) => alertDialog, context: context);
   }
 }

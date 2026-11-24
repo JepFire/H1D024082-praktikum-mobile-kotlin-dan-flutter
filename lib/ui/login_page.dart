@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
-import 'registrasi_page.dart';
+import 'package:belajar_flutter/bloc/login_bloc.dart';
+import 'package:belajar_flutter/helpers/user_info.dart';
+import 'package:belajar_flutter/ui/produk_page.dart';
+import 'package:belajar_flutter/ui/registrasi_page.dart';
+import 'package:belajar_flutter/widget/warning_dialog.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -51,11 +55,10 @@ class _LoginPageState extends State<LoginPage> {
   // Membuat Textbox email
   Widget _emailTextField() {
     return TextFormField(
-      decoration: const InputDecoration(labelText: 'Email'),
+      decoration: const InputDecoration(labelText: "Email"),
       keyboardType: TextInputType.emailAddress,
       controller: _emailTextboxController,
       validator: (value) {
-        // Validasi harus diisi
         if (value == null || value.isEmpty) {
           return 'Email harus diisi';
         }
@@ -67,14 +70,13 @@ class _LoginPageState extends State<LoginPage> {
   // Membuat Textbox password
   Widget _passwordTextField() {
     return TextFormField(
-      decoration: const InputDecoration(labelText: 'Password'),
+      decoration: const InputDecoration(labelText: "Password"),
       keyboardType: TextInputType.text,
       obscureText: true,
       controller: _passwordTextboxController,
       validator: (value) {
-        // Password harus diisi
         if (value == null || value.isEmpty) {
-          return 'Password harus diisi';
+          return "Password harus diisi";
         }
         return null;
       },
@@ -84,18 +86,52 @@ class _LoginPageState extends State<LoginPage> {
   // Membuat Tombol Login
   Widget _buttonLogin() {
     return ElevatedButton(
-      onPressed: _isLoading
-          ? null
-          : () {
+      child: const Text("Login"),
+      onPressed: () {
         final validate = _formKey.currentState!.validate();
-        // Modul ini hanya mencontohkan validasi form.
-        // Permintaan login ke REST API dibahas pada materi berikutnya.
-        if (validate) {
-          FocusScope.of(context).unfocus();
+        if (validate && !_isLoading) {
+          _submit();
         }
       },
-      child: const Text('Login'),
     );
+  }
+
+  Future<void> _submit() async {
+    _formKey.currentState!.save();
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final value = await LoginBloc.login(
+        email: _emailTextboxController.text,
+        password: _passwordTextboxController.text,
+      );
+      await UserInfo().setToken(value.token.toString());
+      await UserInfo().setUserID(int.parse(value.userID.toString()));
+
+      if (!mounted) return;
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const ProdukPage()),
+      );
+    } catch (error) {
+      debugPrint(error.toString());
+      if (!mounted) return;
+      await showDialog<void>(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) => const WarningDialog(
+          description: "Login gagal, silahkan coba lagi",
+        ),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
   }
 
   // Membuat menu untuk membuka halaman registrasi
@@ -103,15 +139,13 @@ class _LoginPageState extends State<LoginPage> {
     return Center(
       child: InkWell(
         child: const Text(
-          'Registrasi',
+          "Registrasi",
           style: TextStyle(color: Colors.blue),
         ),
         onTap: () {
           Navigator.push(
             context,
-            MaterialPageRoute(
-              builder: (context) => const RegistrasiPage(),
-            ),
+            MaterialPageRoute(builder: (context) => const RegistrasiPage()),
           );
         },
       ),
