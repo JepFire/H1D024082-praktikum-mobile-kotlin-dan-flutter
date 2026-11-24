@@ -30,5 +30,4 @@ Berikut adalah hasil dokumentasi/screenshot dari praktikum Pertemuan 4:
 ## Pertemuan 5
 Berikut adalah hasil dokumentasi/screenshot dari praktikum Pertemuan 5:
 
-<img width="432" height="886" alt="image" src="https://github.com/user-attachments/assets/dc719651-a031-4d79-9509-6d24a34a3442" />
 <img width="432" height="886" alt="image" src="https://github.com/user-attachments/assets/0e9f43f6-2cfd-42cb-b801-5c49e8882daa" />
